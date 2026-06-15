@@ -1,0 +1,6 @@
+interface:
+  display_name: "Ink Image Gen"
+  short_description: "Generate and edit images through a relay API"
+  icon_small: "./assets/imagegen-small.svg"
+  icon_large: "./assets/imagegen.png"
+  default_prompt: "Use $ink-imagegen to generate or edit an image through my relay API."
