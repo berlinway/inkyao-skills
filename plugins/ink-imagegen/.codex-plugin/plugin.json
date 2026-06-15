@@ -1,0 +1,11 @@
+{
+  "name": "ink-imagegen",
+  "version": "1.0.0",
+  "description": "Generate or edit raster images through a configured OpenAI-compatible relay image API instead of Codex's built-in image tool.",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Ink Image Gen",
+    "iconSmall": "./assets/imagegen-small.svg",
+    "iconLarge": "./assets/imagegen.png"
+  }
+}

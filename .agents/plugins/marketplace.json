@@ -1,0 +1,22 @@
+{
+  "name": "inkyao-skills",
+  "interface": {
+    "displayName": "Inkyao Skills"
+  },
+  "plugins": [
+    {
+      "name": "ink-imagegen",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/berlinway/inkyao-skills.git",
+        "path": "./plugins/ink-imagegen",
+        "ref": "main"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
