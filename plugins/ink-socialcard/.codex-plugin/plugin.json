@@ -1,0 +1,9 @@
+{
+  "name": "ink-socialcard",
+  "version": "1.0.0",
+  "description": "Generate Guizang-style social card image sets and WeChat official account cover pairs from articles, scripts, screenshots, product notes, subtitles, or photos. Supports Xiaohongshu/Rednote 3:4 carousels, WeChat 21:9 + 1:1 covers, Swiss Style, and magazine-style layouts.",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Ink Social Card"
+  }
+}
