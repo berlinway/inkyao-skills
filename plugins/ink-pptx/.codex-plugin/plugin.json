@@ -1,0 +1,9 @@
+{
+  "name": "ink-pptx",
+  "version": "1.0.2",
+  "description": "Smart PPT generator. Turns a topic, industry, and style into a polished .pptx presentation with curated color schemes and 20+ design style guides. Supports Chinese and English, user templates or AI auto-coloring.",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Ink PPTX"
+  }
+}

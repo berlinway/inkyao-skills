@@ -27,10 +27,11 @@ codex plugin install ink-imagegen
 
 ## Available plugins
 
-| Plugin         | Description                                                        |
-| -------------- | ----------------------------------------------------------------- |
-| `ink-imagegen` | Generate/edit images through an OpenAI-compatible relay image API. |
-| `ppt-master`   | Generate editable PPTX from PDF/DOCX/URL/Markdown; AI images routed through the `sub.inkyao.com` relay. |
+| Plugin           | Description                                                        |
+| ---------------- | ----------------------------------------------------------------- |
+| `ink-imagegen`   | Generate/edit images through an OpenAI-compatible relay image API. |
+| `ink-pptx`       | Generate a polished `.pptx` from a topic/industry/style with curated color schemes and 20+ design style guides (Chinese/English). |
+| `ink-socialcard` | Generate Guizang-style social card sets (Xiaohongshu 3:4) and WeChat 21:9 + 1:1 cover pairs from articles, screenshots, or notes. |
 
 ## Repo layout
 
