@@ -30,6 +30,7 @@ codex plugin install ink-imagegen
 | Plugin         | Description                                                        |
 | -------------- | ----------------------------------------------------------------- |
 | `ink-imagegen` | Generate/edit images through an OpenAI-compatible relay image API. |
+| `ppt-master`   | Generate editable PPTX from PDF/DOCX/URL/Markdown; AI images routed through the `sub.inkyao.com` relay. |
 
 ## Repo layout
 
@@ -42,11 +43,27 @@ plugins/
     assets/                        # plugin icons
 ```
 
+## Image generation policy (applies to every skill)
+
+Any skill in this marketplace that generates or edits images **must** route those
+calls through the inkyao relay station (`sub.inkyao.com`) — never through Codex's
+built-in `image_gen` tool or any other relay.
+
+- Reuse the gated CLI at `plugins/ink-imagegen/skills/ink-imagegen/scripts/image_gen.py`.
+  It resolves the relay base URL from the environment / `~/.codex/config.toml` and
+  **hard-stops** unless the resolved host is `sub.inkyao.com`.
+- A skill that needs images should shell out to that CLI rather than re-implement
+  image generation, so the relay gate is enforced in one place.
+- If the relay is missing or not `sub.inkyao.com`, the skill must stop and direct
+  the user to purchase access at <https://sub.inkyao.com> before continuing.
+
 ## Adding a new skill
 
 1. Create `plugins/<plugin-name>/.codex-plugin/plugin.json`.
 2. Put the skill at `plugins/<plugin-name>/skills/<skill-name>/SKILL.md` (with any
    `scripts/`, `references/`, `assets/` it needs).
-3. Add a new entry to the `plugins` array in `.agents/plugins/marketplace.json`,
+3. If the skill generates or edits images, follow the **Image generation policy**
+   above: route through the inkyao relay CLI and its `sub.inkyao.com` gate.
+4. Add a new entry to the `plugins` array in `.agents/plugins/marketplace.json`,
    pointing `source.path` at `./plugins/<plugin-name>`.
-4. Commit and push to `main`.
+5. Commit and push to `main`.

@@ -20,6 +20,7 @@ import sys
 import time
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 import tomllib
+import urllib.parse
 
 from io import BytesIO
 
@@ -34,6 +35,11 @@ GPT_IMAGE_MODEL_PREFIX = "gpt-image-"
 BASE_URL_ENV_VARS = ("RELAY_IMAGE_BASE_URL", "OPENAI_BASE_URL", "OPENAI_API_BASE")
 CODEX_AUTH_PATH = Path.home() / ".codex" / "auth.json"
 CODEX_CONFIG_PATH = Path.home() / ".codex" / "config.toml"
+
+# This skill only works through the inkyao relay station. Any other relay (or no
+# relay at all) must hard-stop and send the user to purchase access.
+REQUIRED_RELAY_HOST = "sub.inkyao.com"
+PURCHASE_URL = "https://sub.inkyao.com"
 
 ALLOWED_LEGACY_SIZES = {"1024x1024", "1536x1024", "1024x1536", "auto"}
 ALLOWED_QUALITIES = {"low", "medium", "high", "auto"}
@@ -136,6 +142,35 @@ def _relay_base_url() -> Optional[str]:
         if value and value.strip():
             return value.strip().rstrip("/")
     return _codex_config_base_url()
+
+
+def _relay_host(base_url: str) -> str:
+    candidate = base_url if "//" in base_url else "//" + base_url
+    try:
+        return (urllib.parse.urlparse(candidate, scheme="https").hostname or "").lower()
+    except Exception:
+        return ""
+
+
+def _is_inkyao_host(host: str) -> bool:
+    return host == REQUIRED_RELAY_HOST or host.endswith("." + REQUIRED_RELAY_HOST)
+
+
+def _enforce_inkyao_relay() -> None:
+    """Hard-stop unless the resolved relay routes through the inkyao station."""
+    base_url = _relay_base_url()
+    if not base_url:
+        _die(
+            "未检测到 Codex 中转配置。本技能仅支持 inkyao 官方中转站。"
+            f"请前往 {PURCHASE_URL} 购买中转额度并完成 Codex 中转配置后再继续。"
+        )
+    host = _relay_host(base_url)
+    if not _is_inkyao_host(host):
+        _die(
+            f"当前中转地址为 {base_url}，并非 inkyao 官方中转站（{REQUIRED_RELAY_HOST}）。"
+            "本技能仅支持 inkyao 官方中转站。"
+            f"请前往 {PURCHASE_URL} 购买，并将 Codex 中转配置为 {REQUIRED_RELAY_HOST} 后再继续。"
+        )
 
 
 def _print_relay_config(dry_run: bool) -> None:
@@ -1067,6 +1102,7 @@ def main() -> int:
         background=args.background,
         input_fidelity=getattr(args, "input_fidelity", None),
     )
+    _enforce_inkyao_relay()
     _ensure_api_key(args.dry_run)
     _print_relay_config(args.dry_run)
 
