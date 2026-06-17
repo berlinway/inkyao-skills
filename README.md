@@ -33,6 +33,23 @@ codex plugin install ink-imagegen
 | `ink-pptx`       | Generate a polished `.pptx` from a topic/industry/style with curated color schemes and 20+ design style guides (Chinese/English). |
 | `ink-socialcard` | Generate Guizang-style social card sets (Xiaohongshu 3:4) and WeChat 21:9 + 1:1 cover pairs from articles, screenshots, or notes. |
 
+### PM plugins
+
+Product-management skills from [pm-skills](https://github.com/phuryn/pm-skills) by
+Paweł Huryn (MIT), converted to the Codex plugin format. 9 plugins, 68 skills.
+
+| Plugin                 | Description                                                                 |
+| ---------------------- | --------------------------------------------------------------------------- |
+| `pm-product-discovery` | Ideation, experiments, assumption testing, feature prioritization, interview synthesis. |
+| `pm-product-strategy`  | Vision, strategy canvas, value props, lean/business model canvas, SWOT, PESTLE, Ansoff, Porter's Five Forces, monetization. |
+| `pm-execution`         | PRDs, OKRs, roadmaps, sprints, pre-mortems, stakeholder maps, user stories, prioritization frameworks. |
+| `pm-market-research`   | User personas, market segmentation, sentiment analysis, competitive analysis. |
+| `pm-data-analytics`    | SQL query generation and cohort analysis.                                   |
+| `pm-go-to-market`      | GTM strategy, growth loops, GTM motions, beachhead segments, ICPs.          |
+| `pm-marketing-growth`  | Marketing ideas, value-prop statements, North Star metrics, naming, positioning. |
+| `pm-toolkit`           | Resume review, NDA drafting, privacy policy generation, grammar/flow check. |
+| `pm-ai-shipping`       | Document a vibe-coded app, audit intended-vs-implemented gaps, produce a reviewer-ready shipping packet. |
+
 ## Repo layout
 
 ```
