@@ -505,13 +505,40 @@ def _decode_write_and_downscale(
         print(f"Wrote {derived}")
 
 
+# The image API can legitimately take 5-10 minutes per request. Wait that long
+# instead of timing out and re-firing. Override with INK_IMAGE_TIMEOUT (seconds).
+_DEFAULT_TIMEOUT_SECONDS = 1200.0
+
+
+def _request_timeout_seconds() -> float:
+    raw = os.environ.get("INK_IMAGE_TIMEOUT")
+    if raw:
+        try:
+            val = float(raw)
+            if val > 0:
+                return val
+        except ValueError:
+            pass
+    return _DEFAULT_TIMEOUT_SECONDS
+
+
+def _client_kwargs() -> Dict[str, Any]:
+    # max_retries=0 disables the SDK's silent auto-retry (default 2), which would
+    # otherwise re-fire a slow request mid-flight. We do our own retry only on
+    # explicit error responses; a slow-but-pending request just waits.
+    return {"timeout": _request_timeout_seconds(), "max_retries": 0}
+
+
 def _create_client():
     try:
         from openai import OpenAI
     except ImportError:
         _die(f"openai SDK not installed in the active environment. {_dependency_hint('openai')}")
     base_url = _relay_base_url()
-    return OpenAI(api_key=_api_key(), base_url=base_url) if base_url else OpenAI(api_key=_api_key())
+    kwargs = _client_kwargs()
+    if base_url:
+        kwargs["base_url"] = base_url
+    return OpenAI(api_key=_api_key(), **kwargs)
 
 
 def _create_async_client():
@@ -529,11 +556,10 @@ def _create_async_client():
             f"{_dependency_hint('openai', upgrade=True)}"
         )
     base_url = _relay_base_url()
-    return (
-        AsyncOpenAI(api_key=_api_key(), base_url=base_url)
-        if base_url
-        else AsyncOpenAI(api_key=_api_key())
-    )
+    kwargs = _client_kwargs()
+    if base_url:
+        kwargs["base_url"] = base_url
+    return AsyncOpenAI(api_key=_api_key(), **kwargs)
 
 
 def _slugify(value: str) -> str:
@@ -648,13 +674,16 @@ def _is_rate_limit_error(exc: Exception) -> bool:
 
 
 def _is_transient_error(exc: Exception) -> bool:
+    # Only retry when the API *clearly returns an error* — rate limits or explicit
+    # server-side error responses (5xx). Do NOT retry on timeouts or dropped
+    # connections: the request may still be in flight (5-10 min is normal), and
+    # re-firing would duplicate the call. In those cases we just wait.
     if _is_rate_limit_error(exc):
         return True
-    name = exc.__class__.__name__.lower()
-    if "timeout" in name or "timedout" in name or "tempor" in name:
+    status = getattr(exc, "status_code", None)
+    if isinstance(status, int) and status >= 500:
         return True
-    msg = str(exc).lower()
-    return "timeout" in msg or "timed out" in msg or "connection reset" in msg
+    return False
 
 
 async def _generate_one_with_retries(
@@ -861,7 +890,7 @@ def _generate(args: argparse.Namespace) -> None:
         return
 
     print(
-        "Calling Image API (generation). This can take up to a couple of minutes.",
+        "Calling Image API (generation). This can take 5-10 minutes; waiting for the response.",
         file=sys.stderr,
     )
     started = time.time()
